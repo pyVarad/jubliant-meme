@@ -21,13 +21,35 @@
   <div class="row">
     <div class="Absolute-Center is-Responsive">
       <div class="col-sm-12 col-md-10 col-md-offset-1">
-        <h1>OAuth Demo</h1>
+        <h1>Cabriolet</h1>
         {% for message in get_flashed_messages() %}
           <p><b>Error</b>: {{ message }}</p>
           {% endfor %}
           {% if not current_user.is_authenticated %}
+          <div class="alert alert-danger" role="alert">
+             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+             <span class="sr-only">Error:</span>
+             User is not Authenticated
+          </div>
             <h2>You're not authenticated.</h2>
             <div class="row">
+              <div class="col-sm-12">
+                <form method="POST" action="/submit">
+                  <div class="form-group">
+                    {{ form.csrf_token }}
+                    <label>{{ form.userName.label }}</label>
+                    {{ form.userName(size=20, **{'class':"form-control", 'placeholder': 'Username'}) }}
+                  </div>
+                  <div class="form-group">
+                    <label>{{ form.password.label }}</label>
+                    {{ form.password(size=20, **{'class':"form-control", 'placeholder': 'Password'}) }}
+                  </div>
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary pull-right">Submit</button>
+                  </div>
+                  </div>
+                </form>
+              </div>
               <div class="col-sm-5">
                 <a class="btn btn-block btn-social btn-facebook" href="{{ url_for('wapi.oauth_authorize', provider='Facebook') }}" role="button">
                   <span class="fa fa-facebook"></span> Sign in with Facebook
