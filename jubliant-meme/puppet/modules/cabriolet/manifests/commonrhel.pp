@@ -46,6 +46,7 @@ class cabriolet::commonrhel::yumRepo {
 
   package { $packages:
     ensure => present,
+    require => Yumrepo['epelRelease'],
   }
 
   exec { 'requirements':

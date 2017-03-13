@@ -14,7 +14,7 @@ class cabriolet::webapp::nginxSetup {
   }
   package {'nginx':
       ensure => installed,
-      require => Package['apache'],
+      require => [Package['apache'], Yumrepo["epelRelease"]],
   }
 }
 

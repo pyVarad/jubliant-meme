@@ -3,6 +3,6 @@
 node 'flask-backend-app' {
     if $operatingsystem == 'CentOS' {
       include cabriolet::commonrhel
-      include cabriolet::webapp
     }
+    include cabriolet::webapp
 }
