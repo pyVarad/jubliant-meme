@@ -12,17 +12,9 @@ class cabriolet::webapp::nginxSetup {
   package {'apache':
     ensure => absent,
   }
-  package { 'epel-release':
-      ensure => installed,
-  }
   package {'nginx':
       ensure => installed,
-      require => [Package['apache'], Package['epel-release']],
-  }
-  service {'nginx':
-      ensure => running,
-      enable => true,
-      require => Package['nginx'],
+      require => Package['apache'],
   }
 }
 
@@ -54,6 +46,11 @@ class cabriolet::webapp::nginxSitesEnabled {
     path => "/etc/nginx/sites-available",
   }
 
+  service {'nginx':
+      ensure => running,
+      enable => true,
+  }
+
   file { "sites-available.conf":
     path   => "/etc/nginx/sites-available/sites-available.conf",
     ensure => file,
@@ -77,5 +74,6 @@ class cabriolet::webapp::nginxSitesEnabled {
     group  => root,
     target => "/etc/nginx/sites-available/sites-available.conf",
     require => File['sites-available.conf'],
+    notify => Service['nginx']
   }
 }

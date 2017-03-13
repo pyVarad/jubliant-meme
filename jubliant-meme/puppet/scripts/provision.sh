@@ -19,8 +19,8 @@ echo "Running Puppet Provisioner script"
 if puppet_ok; then
   echo "Provisioner script OK"
   puppet module install puppetlabs-firewall --version 1.8.2
-  puppet module install stahnma-epel --version 1.2.2
-  puppet module install stankevich-python
+  #puppet module install stahnma-epel --version 1.2.2
+  #puppet module install stankevich-python
   exit
 fi
 
@@ -62,7 +62,7 @@ exec 1>&3 2>&4
 if puppet_ok; then
   echo "Provisioner script OK"
   puppet module install puppetlabs-firewall --version 1.8.2
-  puppet module install stahnma-epel --version 1.2.2
+  #puppet module install stahnma-epel --version 1.2.2
 else
   echo "Provisioner script encountered an error"
   echo "Logs are in: $LOG"
