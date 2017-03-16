@@ -13,46 +13,32 @@ class cabriolet::commonrhel::dependencies {
               "tzdata",
               ]
 
+  package { 'iptables-services':
+      ensure  => installed,
+  }
+
   firewall { '100 Allow http and https access':
     dport   => [80, 443],
     proto  => tcp,
     action => accept,
+    require => Package['iptables-services']
   }
 }
 
 class cabriolet::commonrhel::yumRepo {
-  $packages = [
-      "openssl-devel",
-      "python-pip",
-      "python-devel",
-      "libffi-devel"
-  ]
-
   file {'GPGKEY':
     ensure  => 'present',
-    source  => 'puppet:///modules/cabriolet/epel/RPM-GPG-KEY-EPEL-6',
-    path    => '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6',
+    source  => 'puppet:///modules/cabriolet/epel/RPM-GPG-KEY-EPEL-7',
+    path    => '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7',
   }
 
   yumrepo { 'epelRelease':
     ensure         => 'present',
-    descr          => 'Extra Packages for Enterprise Linux 6 - $basearch',
+    descr          => 'Extra Packages for Enterprise Linux 7 - $basearch',
     enabled        => '1',
     failovermethod => 'priority',
     gpgcheck       => '1',
-    gpgkey         => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6',
-    mirrorlist     => 'https://mirrors.fedoraproject.org/mirrorlist?repo=epel-6&arch=$basearch',
-  }
-
-  package { $packages:
-    ensure => present,
-    require => Yumrepo['epelRelease'],
-  }
-
-  exec { 'requirements':
-    command => 'sudo pip install -r requirements.txt',
-    cwd => '/webapp/FlaskApp/',
-    path    => '/usr/bin/',
-    require => Package[$packages]
+    gpgkey         => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-7',
+    mirrorlist     => 'https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=$basearch',
   }
 }

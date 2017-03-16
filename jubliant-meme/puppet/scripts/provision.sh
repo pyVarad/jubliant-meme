@@ -18,9 +18,10 @@ echo "Running Puppet Provisioner script"
 
 if puppet_ok; then
   echo "Provisioner script OK"
-  puppet module install puppetlabs-firewall --version 1.8.2
-  #puppet module install stahnma-epel --version 1.2.2
-  #puppet module install stankevich-python
+  Firewall=`puppet module list|grep -c puppetlabs-firewall`
+  if [[ $Firewall -eq 0  ]]; then
+    puppet module install puppetlabs-firewall --version 1.8.2
+  fi
   exit
 fi
 
@@ -46,8 +47,13 @@ if [[ -x /usr/bin/dpkg ]]; then
 fi
 
 if [[ -x /usr/bin/yum ]]; then
-  TARGET=puppetlabs-release-el-6.noarch.rpm
+  if [[ -f /etc/os-release ]]; then
+    source /etc/os-release
+  else
+    VERSION_ID=6
+  fi
 
+  TARGET=puppetlabs-release-el-${VERSION_ID}.noarch.rpm
   yum -y update --exclude='kernel*'
 
   if [[ ! -e /etc/yum.repos.d/puppetlabs.repo ]]; then
@@ -55,14 +61,13 @@ if [[ -x /usr/bin/yum ]]; then
   fi
 
   yum -y install puppet
+  puppet module install puppetlabs-firewall --version 1.8.2
 fi
 
 exec 1>&3 2>&4
 
 if puppet_ok; then
   echo "Provisioner script OK"
-  puppet module install puppetlabs-firewall --version 1.8.2
-  #puppet module install stahnma-epel --version 1.2.2
 else
   echo "Provisioner script encountered an error"
   echo "Logs are in: $LOG"

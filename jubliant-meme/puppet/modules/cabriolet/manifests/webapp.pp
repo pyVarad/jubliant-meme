@@ -1,7 +1,8 @@
 class cabriolet::webapp {
   class { "cabriolet::webapp::nginxSetup": } ->
   class { "cabriolet::webapp::nginxConfigure": } ->
-  class { "cabriolet::webapp::nginxSitesEnabled": }
+  class { "cabriolet::webapp::nginxSitesEnabled": } ->
+  class { "cabriolet::commonrhel::webAppDependencies": }
 }
 
 #
@@ -48,7 +49,7 @@ class cabriolet::webapp::nginxSitesEnabled {
 
   service {'nginx':
       ensure => running,
-      enable => true,
+      enable => true
   }
 
   file { "sites-available.conf":
@@ -75,5 +76,30 @@ class cabriolet::webapp::nginxSitesEnabled {
     target => "/etc/nginx/sites-available/sites-available.conf",
     require => File['sites-available.conf'],
     notify => Service['nginx']
+  }
+
+  exec { 'setBoolSELinux':
+    command => 'sudo setsebool -P httpd_can_network_connect 1',
+    path    => '/usr/bin/',
+  }
+}
+
+class cabriolet::commonrhel::webAppDependencies {
+  $packages = [
+    "openssl-devel",
+    "python2-pip",
+    "python-devel",
+    "libffi-devel"
+  ]
+  package { $packages:
+    ensure => present,
+    require => Yumrepo['epelRelease'],
+  }
+
+  exec { 'requirements':
+    command => 'sudo pip install -r requirements.txt',
+    cwd => '/webapp/FlaskApp/',
+    path    => '/usr/bin/',
+    require => Package[$packages]
   }
 }

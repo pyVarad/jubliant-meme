@@ -6,3 +6,9 @@ node 'flask-backend-app' {
     }
     include cabriolet::webapp
 }
+node 'ming-backend-app' {
+    if $operatingsystem == 'CentOS' {
+      include cabriolet::commonrhel
+    }
+    include cabriolet::mongo
+}
